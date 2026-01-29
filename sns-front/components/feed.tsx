@@ -1,250 +1,272 @@
 "use client"
 
 import { useState } from "react"
+import { Heart, MessageCircle, Repeat2, Share, MoreHorizontal, ImageIcon, Smile, Calendar, MapPin } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Heart, MessageCircle, Repeat2, Share, ImageIcon, Smile, CalendarDays, MapPin, MoreHorizontal, Bookmark } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 const posts = [
   {
     id: 1,
     user: {
-      name: "김민수",
-      username: "minsu_kim",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=minsu",
+      name: "김개발",
+      handle: "@devkim",
+      avatar: "/placeholder.svg?height=48&width=48",
+      initials: "김",
     },
-    content: "오늘 새로운 프로젝트를 시작했어요! 정말 설레네요 ✨ 열심히 해서 좋은 결과물 만들어볼게요!",
+    content: "오늘 새로운 프로젝트를 시작했습니다! React와 Next.js를 사용해서 멋진 앱을 만들어볼 예정이에요. 기대해주세요",
     timestamp: "2시간",
-    likes: 42,
-    comments: 8,
-    reposts: 3,
+    likes: 128,
+    comments: 24,
+    reposts: 15,
     liked: false,
-    bookmarked: false,
   },
   {
     id: 2,
     user: {
-      name: "이서연",
-      username: "seoyeon_lee",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=seoyeon",
+      name: "이디자인",
+      handle: "@designlee",
+      avatar: "/placeholder.svg?height=48&width=48",
+      initials: "이",
     },
-    content: "주말에 카페에서 코딩하는 건 정말 최고의 힐링이에요 ☕️💻 오늘도 화이팅!",
-    image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600&h=400&fit=crop",
+    content: "UI/UX 디자인의 핵심은 사용자 경험입니다. 아름다운 것보다 사용하기 쉬운 것이 더 중요해요. 오늘 새로운 디자인 시스템을 완성했습니다!",
     timestamp: "4시간",
-    likes: 128,
-    comments: 24,
-    reposts: 12,
+    likes: 256,
+    comments: 42,
+    reposts: 38,
     liked: true,
-    bookmarked: true,
   },
   {
     id: 3,
     user: {
-      name: "박준혁",
-      username: "junhyuk_park",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=junhyuk",
+      name: "박스타트업",
+      handle: "@startuppark",
+      avatar: "/placeholder.svg?height=48&width=48",
+      initials: "박",
     },
-    content: "React 19가 정말 대단하네요! 새로운 기능들 테스트해보는 중인데 개발 경험이 한층 좋아졌어요 🚀",
+    content: "스타트업 창업 3년차. 힘든 시간도 많았지만, 팀원들과 함께라서 여기까지 올 수 있었습니다. 앞으로도 화이팅!",
     timestamp: "6시간",
-    likes: 256,
-    comments: 45,
+    likes: 512,
+    comments: 89,
     reposts: 67,
     liked: false,
-    bookmarked: false,
   },
   {
     id: 4,
     user: {
-      name: "최유진",
-      username: "yujin_choi",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=yujin",
+      name: "최테크",
+      handle: "@techchoi",
+      avatar: "/placeholder.svg?height=48&width=48",
+      initials: "최",
     },
-    content: "오늘 저녁 하늘이 너무 예뻐서 한 장 📸 모두 좋은 하루 보내세요!",
-    image: "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=600&h=400&fit=crop",
+    content: "AI 기술이 정말 빠르게 발전하고 있네요. 매일 새로운 것을 배우고 있습니다. 개발자로서 정말 흥미로운 시대에 살고 있어요!",
     timestamp: "8시간",
-    likes: 89,
-    comments: 12,
-    reposts: 5,
+    likes: 384,
+    comments: 56,
+    reposts: 43,
     liked: false,
-    bookmarked: false,
+  },
+  {
+    id: 5,
+    user: {
+      name: "정커피",
+      handle: "@coffeejung",
+      avatar: "/placeholder.svg?height=48&width=48",
+      initials: "정",
+    },
+    content: "좋은 코드는 좋은 커피에서 시작됩니다. 오늘도 카페에서 코딩 중! 집중력이 확 올라가네요.",
+    timestamp: "12시간",
+    likes: 198,
+    comments: 31,
+    reposts: 12,
+    liked: true,
   },
 ]
 
+function formatNumber(num: number): string {
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "천"
+  }
+  return num.toString()
+}
+
 export function Feed() {
-  const [postList, setPostList] = useState(posts)
-  const [newPost, setNewPost] = useState("")
+  const [activeTab, setActiveTab] = useState<"추천" | "팔로잉">("추천")
+  const [likedPosts, setLikedPosts] = useState<Record<number, boolean>>(
+    posts.reduce((acc, post) => ({ ...acc, [post.id]: post.liked }), {})
+  )
+  const [likeCounts, setLikeCounts] = useState<Record<number, number>>(
+    posts.reduce((acc, post) => ({ ...acc, [post.id]: post.likes }), {})
+  )
 
-  const handleLike = (postId: number) => {
-    setPostList(postList.map(post => 
-      post.id === postId 
-        ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 }
-        : post
-    ))
-  }
-
-  const handleBookmark = (postId: number) => {
-    setPostList(postList.map(post => 
-      post.id === postId 
-        ? { ...post, bookmarked: !post.bookmarked }
-        : post
-    ))
-  }
-
-  const handleSubmit = () => {
-    if (!newPost.trim()) return
-    const post = {
-      id: Date.now(),
-      user: {
-        name: "사용자",
-        username: "username",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=user",
-      },
-      content: newPost,
-      timestamp: "방금",
-      likes: 0,
-      comments: 0,
-      reposts: 0,
-      liked: false,
-      bookmarked: false,
-    }
-    setPostList([post, ...postList])
-    setNewPost("")
+  const toggleLike = (postId: number) => {
+    setLikedPosts((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }))
+    setLikeCounts((prev) => ({
+      ...prev,
+      [postId]: prev[postId] + (likedPosts[postId] ? -1 : 1),
+    }))
   }
 
   return (
-    <main className="flex-1 border-x border-border min-h-screen max-w-2xl">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border p-4">
-        <h1 className="text-xl font-bold text-foreground">홈</h1>
-      </header>
+    <main className="flex-1 w-full max-w-[600px] border-x border-border min-h-screen">
+      {/* Header with Glassmorphism */}
+      <div className="sticky top-0 z-10 glassmorphism border-b border-border">
+        <div className="flex h-14">
+          <button 
+            onClick={() => setActiveTab("추천")}
+            className={`flex-1 flex items-center justify-center transition-all duration-300 font-bold relative ${
+              activeTab === "추천" 
+                ? "text-foreground" 
+                : "text-muted-foreground hover:bg-accent/50"
+            }`}
+          >
+            추천
+            {activeTab === "추천" && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-1 bg-electric-purple rounded-full glow-purple"></span>
+            )}
+          </button>
+          <button 
+            onClick={() => setActiveTab("팔로잉")}
+            className={`flex-1 flex items-center justify-center transition-all duration-300 font-bold relative ${
+              activeTab === "팔로잉" 
+                ? "text-foreground" 
+                : "text-muted-foreground hover:bg-accent/50"
+            }`}
+          >
+            팔로잉
+            {activeTab === "팔로잉" && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-1 bg-electric-purple rounded-full glow-purple"></span>
+            )}
+          </button>
+        </div>
+      </div>
 
       {/* Compose */}
-      <Card className="border-x-0 border-t-0 rounded-none p-4">
-        <div className="flex gap-3">
-          <Avatar className="w-12 h-12 border-2 border-accent">
-            <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" />
-            <AvatarFallback className="bg-accent text-accent-foreground">나</AvatarFallback>
+      <div className="p-4 border-b border-border">
+        <div className="flex gap-4">
+          <Avatar className="w-10 h-10 shrink-0 ring-2 ring-electric-purple/30">
+            <AvatarImage src="/placeholder.svg?height=40&width=40" />
+            <AvatarFallback className="bg-gradient-to-br from-electric-purple to-sky-blue text-background">나</AvatarFallback>
           </Avatar>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <textarea
-              value={newPost}
-              onChange={(e) => setNewPost(e.target.value)}
               placeholder="무슨 일이 일어나고 있나요?"
-              className="w-full bg-transparent text-lg placeholder:text-muted-foreground resize-none outline-none min-h-[80px]"
+              className="w-full resize-none bg-transparent text-xl outline-none placeholder:text-muted-foreground min-h-[80px] text-foreground leading-relaxed"
             />
             <div className="flex items-center justify-between pt-3 border-t border-border">
-              <div className="flex gap-2">
-                <Button variant="ghost" size="icon" className="text-primary hover:text-primary hover:bg-primary/10 rounded-full">
+              <div className="flex items-center gap-0.5">
+                <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-sky-blue/10 text-sky-blue transition-all duration-300">
                   <ImageIcon className="w-5 h-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-primary hover:text-primary hover:bg-primary/10 rounded-full">
+                </button>
+                <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-sky-blue/10 text-sky-blue transition-all duration-300">
                   <Smile className="w-5 h-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-primary hover:text-primary hover:bg-primary/10 rounded-full">
-                  <CalendarDays className="w-5 h-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-primary hover:text-primary hover:bg-primary/10 rounded-full">
+                </button>
+                <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-sky-blue/10 text-sky-blue transition-all duration-300">
+                  <Calendar className="w-5 h-5" />
+                </button>
+                <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-sky-blue/10 text-sky-blue transition-all duration-300">
                   <MapPin className="w-5 h-5" />
-                </Button>
+                </button>
               </div>
-              <Button 
-                onClick={handleSubmit}
-                disabled={!newPost.trim()}
-                className="rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 px-5"
-              >
+              <button className="rounded-full px-5 h-9 font-bold bg-gradient-to-r from-electric-purple to-sky-blue text-background hover:glow-purple transition-all duration-300 hover:scale-105 flex items-center justify-center">
                 게시하기
-              </Button>
+              </button>
             </div>
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Posts */}
-      <div className="divide-y divide-border">
-        {postList.map((post) => (
-          <article key={post.id} className="p-4 hover:bg-muted/50 transition-colors">
-            <div className="flex gap-3">
-              <Avatar className="w-12 h-12">
+      <div>
+        {posts.map((post) => (
+          <article
+            key={post.id}
+            className="px-4 py-3 border-b border-border hover:bg-accent/30 transition-all duration-300 cursor-pointer"
+          >
+            <div className="flex gap-4">
+              <Avatar className="w-10 h-10 shrink-0">
                 <AvatarImage src={post.user.avatar || "/placeholder.svg"} />
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                  {post.user.name[0]}
+                <AvatarFallback className="bg-gradient-to-br from-electric-purple to-sky-blue text-background font-bold">
+                  {post.user.initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 flex-wrap">
-                    <span className="font-semibold text-foreground">{post.user.name}</span>
-                    <span className="text-muted-foreground">@{post.user.username}</span>
-                    <span className="text-muted-foreground">·</span>
-                    <span className="text-muted-foreground">{post.timestamp}</span>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-baseline gap-1 flex-wrap min-w-0">
+                    <span className="font-bold hover:underline hover:text-electric-purple transition-colors truncate">
+                      {post.user.name}
+                    </span>
+                    <span className="text-muted-foreground text-sm truncate">
+                      {post.user.handle}
+                    </span>
+                    <span className="text-muted-foreground text-sm">·</span>
+                    <span className="text-muted-foreground text-sm hover:underline hover:text-sky-blue transition-colors shrink-0">
+                      {post.timestamp}
+                    </span>
                   </div>
-                  <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 hover:text-primary -mr-2">
+                  <button className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full hover:bg-sky-blue/10 text-muted-foreground hover:text-sky-blue transition-all duration-300 -mt-1 -mr-2">
                     <MoreHorizontal className="w-5 h-5" />
-                  </Button>
+                  </button>
                 </div>
-                <p className="text-foreground mt-1 whitespace-pre-wrap">{post.content}</p>
-                {post.image && (
-                  <div className="mt-3 rounded-2xl overflow-hidden border border-border">
-                    <img 
-                      src={post.image || "/placeholder.svg"} 
-                      alt="Post image" 
-                      className="w-full object-cover max-h-96"
-                    />
-                  </div>
-                )}
-                <div className="flex items-center justify-between mt-3 max-w-md">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="flex items-center gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
+                <p className="mt-1 text-[15px] leading-relaxed whitespace-pre-wrap text-foreground">
+                  {post.content}
+                </p>
+                <div className="flex items-center justify-between mt-3 -ml-2">
+                  {/* Reply - Sky Blue */}
+                  <button className="flex items-center group">
+                    <div className="w-9 h-9 flex items-center justify-center rounded-full group-hover:bg-sky-blue/10 transition-all duration-300">
+                      <MessageCircle className="w-[18px] h-[18px] text-muted-foreground group-hover:text-sky-blue transition-colors" />
+                    </div>
+                    <span className="text-sm text-muted-foreground group-hover:text-sky-blue transition-colors min-w-[2ch]">
+                      {post.comments}
+                    </span>
+                  </button>
+                  {/* Repost - Lime Green */}
+                  <button className="flex items-center group">
+                    <div className="w-9 h-9 flex items-center justify-center rounded-full group-hover:bg-lime-green/10 transition-all duration-300">
+                      <Repeat2 className="w-[18px] h-[18px] text-muted-foreground group-hover:text-lime-green transition-colors" />
+                    </div>
+                    <span className="text-sm text-muted-foreground group-hover:text-lime-green transition-colors min-w-[2ch]">
+                      {post.reposts}
+                    </span>
+                  </button>
+                  {/* Like - Orange */}
+                  <button
+                    className="flex items-center group"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      toggleLike(post.id)
+                    }}
                   >
-                    <MessageCircle className="w-5 h-5" />
-                    <span className="text-sm">{post.comments}</span>
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="flex items-center gap-2 text-muted-foreground hover:text-accent hover:bg-accent/10 rounded-full"
-                  >
-                    <Repeat2 className="w-5 h-5" />
-                    <span className="text-sm">{post.reposts}</span>
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => handleLike(post.id)}
-                    className={cn(
-                      "flex items-center gap-2 rounded-full",
-                      post.liked 
-                        ? "text-pink-500 hover:bg-pink-500/10" 
-                        : "text-muted-foreground hover:text-pink-500 hover:bg-pink-500/10"
-                    )}
-                  >
-                    <Heart className={cn("w-5 h-5", post.liked && "fill-current")} />
-                    <span className="text-sm">{post.likes}</span>
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => handleBookmark(post.id)}
-                    className={cn(
-                      "flex items-center gap-2 rounded-full",
-                      post.bookmarked 
-                        ? "text-primary hover:bg-primary/10" 
-                        : "text-muted-foreground hover:text-primary hover:bg-primary/10"
-                    )}
-                  >
-                    <Bookmark className={cn("w-5 h-5", post.bookmarked && "fill-current")} />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="flex items-center gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
-                  >
-                    <Share className="w-5 h-5" />
-                  </Button>
+                    <div className={`w-9 h-9 flex items-center justify-center rounded-full transition-all duration-300 ${
+                      likedPosts[post.id] ? "" : "group-hover:bg-bright-orange/10"
+                    }`}>
+                      <Heart
+                        className={`w-[18px] h-[18px] transition-all duration-300 ${
+                          likedPosts[post.id]
+                            ? "fill-bright-orange text-bright-orange scale-110"
+                            : "text-muted-foreground group-hover:text-bright-orange"
+                        }`}
+                      />
+                    </div>
+                    <span
+                      className={`text-sm transition-colors min-w-[2ch] ${
+                        likedPosts[post.id]
+                          ? "text-bright-orange"
+                          : "text-muted-foreground group-hover:text-bright-orange"
+                      }`}
+                    >
+                      {formatNumber(likeCounts[post.id])}
+                    </span>
+                  </button>
+                  {/* Share - Sky Blue */}
+                  <button className="flex items-center group">
+                    <div className="w-9 h-9 flex items-center justify-center rounded-full group-hover:bg-sky-blue/10 transition-all duration-300">
+                      <Share className="w-[18px] h-[18px] text-muted-foreground group-hover:text-sky-blue transition-colors" />
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>

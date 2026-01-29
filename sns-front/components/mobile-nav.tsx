@@ -1,43 +1,47 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { Home, Search, Bell, Mail, User } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 const navItems = [
-  { icon: Home, label: "홈", href: "/" },
-  { icon: Search, label: "탐색", href: "/explore" },
-  { icon: Bell, label: "알림", href: "/notifications" },
-  { icon: Mail, label: "쪽지", href: "/messages" },
-  { icon: User, label: "프로필", href: "/profile" },
+  { icon: Home, label: "홈" },
+  { icon: Search, label: "탐색" },
+  { icon: Bell, label: "알림", badge: 3 },
+  { icon: Mail, label: "쪽지" },
+  { icon: User, label: "프로필" },
 ]
 
 export function MobileNav() {
-  const [activeTab, setActiveTab] = useState("/")
+  const [activeItem, setActiveItem] = useState("홈")
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t border-border">
-      <div className="flex items-center justify-around py-2">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setActiveTab(item.href)}
-            className={cn(
-              "flex flex-col items-center gap-1 p-2 rounded-lg transition-colors",
-              activeTab === item.href
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <item.icon className={cn(
-              "w-6 h-6",
-              activeTab === item.href && "text-primary"
-            )} />
-            <span className="text-xs">{item.label}</span>
-          </Link>
-        ))}
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 glassmorphism border-t border-border z-50 safe-area-bottom">
+      <div className="flex items-center h-14">
+        {navItems.map((item) => {
+          const isActive = activeItem === item.label
+          return (
+            <button
+              key={item.label}
+              onClick={() => setActiveItem(item.label)}
+              className={`relative flex-1 h-full flex items-center justify-center transition-all duration-300 ${
+                isActive ? "text-electric-purple" : "text-muted-foreground active:text-foreground"
+              }`}
+              aria-label={item.label}
+            >
+              <div className={`relative flex items-center justify-center w-12 h-12 ${isActive ? "glow-purple rounded-full" : ""}`}>
+                <item.icon className={`w-6 h-6 transition-transform duration-300 ${isActive ? "scale-110" : ""}`} />
+                {item.badge && (
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-bright-orange text-[10px] font-bold rounded-full flex items-center justify-center text-background">
+                    {item.badge}
+                  </span>
+                )}
+              </div>
+              {isActive && (
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-electric-purple rounded-full"></span>
+              )}
+            </button>
+          )
+        })}
       </div>
     </nav>
   )

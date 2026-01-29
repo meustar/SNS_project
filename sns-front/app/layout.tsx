@@ -8,8 +8,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Chirp - 소셜 미디어 플랫폼',
-  description: '친구들과 소통하고, 트렌드를 발견하고, 생각을 공유하세요',
+  title: '소셜 - 지금 일어나고 있는 일',
+  description: '친구들과 연결하고, 트렌드를 발견하고, 세상과 소통하세요.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko" className="dark">
+    <html lang="ko">
       <body className={`font-sans antialiased`}>
         {children}
         <Analytics />

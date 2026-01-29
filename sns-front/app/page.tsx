@@ -1,25 +1,18 @@
-import { Sidebar } from "@/components/sidebar"
-import { Feed } from "@/components/feed"
+import { LeftSidebar } from "@/components/left-sidebar"
 import { RightSidebar } from "@/components/right-sidebar"
+import { Feed } from "@/components/feed"
 import { MobileNav } from "@/components/mobile-nav"
+import { MobileHeader } from "@/components/mobile-header"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      <div className="flex max-w-[1400px] mx-auto">
-        {/* Left Sidebar - Hidden on mobile */}
-        <div className="hidden md:block">
-          <Sidebar />
-        </div>
-        
-        {/* Main Feed */}
+      <MobileHeader />
+      <div className="flex justify-center mx-auto max-w-[1280px]">
+        <LeftSidebar />
         <Feed />
-        
-        {/* Right Sidebar - Hidden on tablet and mobile */}
         <RightSidebar />
       </div>
-      
-      {/* Mobile Navigation */}
       <MobileNav />
     </div>
   )
