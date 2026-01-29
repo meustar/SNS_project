@@ -1,0 +1,13 @@
+### Java & Spring Boot ###
+.gradle/
+build/
+out/
+bin/
+*.class
+*.jar
+.idea/      # 인텔리제이 설정파일 제외
+
+### Frontend (Node.js) ###
+node_modules/
+dist/
+.env.local
