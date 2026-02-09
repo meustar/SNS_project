@@ -2,6 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "4.0.2"
 	id("io.spring.dependency-management") version "1.1.7"
+	id("com.diffplug.spotless") version "6.25.0"
 }
 
 group = "com.meustar"
@@ -37,4 +38,34 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+spotless {
+	java {
+		target("src/*/java/**/*.java")
+
+		// 1. 포맷터
+		googleJavaFormat()
+
+		// 2. 부가 기능
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		endWithNewline() // 수정됨 (L -> l)
+	}
+
+	kotlinGradle {
+		target("**/*.gradle.kts")
+
+		ktlint()
+		trimTrailingWhitespace()
+		endWithNewline() // 수정됨 (L -> l)
+	}
+
+	json {
+		target("src/**/*.json")
+		simple().indentWithSpaces(2)
+
+		trimTrailingWhitespace()
+		endWithNewline() // 수정됨 (L -> l)
+	}
 }
