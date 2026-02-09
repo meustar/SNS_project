@@ -26,6 +26,8 @@ dependencies {
 	testAnnotationProcessor("org.projectlombok:lombok")
 	implementation("de.mkammerer:argon2-jvm:2.11")
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("org.springframework.session:spring-session-data-redis")
 	implementation("org.springframework.boot:spring-boot-h2console")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")

@@ -2,6 +2,7 @@ package com.meustar.springboot_sns.config;
 
 import com.meustar.springboot_sns.config.handler.CustomAuthenticationFailureHandler;
 import com.meustar.springboot_sns.config.handler.CustomAuthenticationSuccessHandler;
+import com.meustar.springboot_sns.config.handler.CustomLogoutSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,7 @@ public class SecurityConfig {
 
     private final CustomAuthenticationSuccessHandler successHandler; // 로그인 성공 시 처리할 핸들러
     private final CustomAuthenticationFailureHandler failureHandler; // 로그인 실패 시 처리할 핸들러
+    private final CustomLogoutSuccessHandler logoutSuccessHandler; // 로그아웃 성공 시 처리할 핸들러
 
     /**
      * 인증 관리자(AuthenticationManager) 빈 등록
@@ -66,6 +68,17 @@ public class SecurityConfig {
                         .successHandler(successHandler)
                         .failureHandler(failureHandler)
                         // 로그인 관련 경로는 누구나 접근 가능
+                        .permitAll()
+                )
+
+                // 로그아웃 설정
+                .logout(logout -> logout
+                        // 로그아웃 요청 URL (POST /api/v1/users/logout)
+                        .logoutUrl("/api/v1/users/logout")
+                        // 로그아웃 성공 시 핸들러
+                        .logoutSuccessHandler(logoutSuccessHandler)
+                        // 로그아웃 시 쿠키 삭제 (JSESSIONID)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
                 )
                 
